@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const inventoryRouter = require('./routes/inventory');
 
 const app = express();
 
@@ -20,9 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+require('dotenv').config();
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/inventory', inventoryRouter);
 
 // Set `strictQuery: false` to globally opt into filtering by properties that aren't in the schema
 // Included because it removes preparatory warnings for Mongoose 7.
