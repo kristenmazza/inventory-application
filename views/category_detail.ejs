@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head"); %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <h2><%= category.name %></h2>
+        <p><strong>Description:</strong> <%= category.description %></p>
+        <div class="button-group">
+          <button
+            class="update-button"
+            onclick="location.href=`<%- category.url + '/update' %>`"
+          >
+            Update
+          </button>
+          <button
+            class="delete-button"
+            onclick="location.href=`<%- category.url + '/delete' %>`"
+          >
+            Delete
+          </button>
+        </div>
+        <hr class="category-detail-divider"/>
+        <h1>Items in Category</h1>
+        <div class="item-cards">
+        <% if (item_list.length > 0) { %>
+        <% for (let i = 0; i<item_list.length; i++) { %>
+            <div class="item-card">
+                <div class="item-group-main">
+                    <img class="item-image" src="/images/square.png" />
+                    <div class="item-group">
+                        <h2 class="item-card-name"><%= item_list[i].name %></h2>
+                        <p class="item-description"><%= item_list[i].description %></p>
+                    </div>
+                </div>
+                <div class="item-group-main">
+                    <span class="vr"></span>
+                    <div class="item-group-right">
+                        <div class="item-group">
+                            <p><strong>Category:</strong> <%= item_list[i].category.name %></p>
+                            <p><strong>Price:</strong> $<%= item_list[i].price %></p>
+                            <p><strong>In Stock:</strong> <%=item_list[i].number_in_stock %></p>
+                        </div>
+                        <button class="view-item-button" onclick="location.href = '<%= item_list[i].url %>'">View</button>
+                    </div>
+                </div>
+            </div>
+          <% } %> <% } else { %>
+          <li>There are no items in this category.</li>
+          <% } %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

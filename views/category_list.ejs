@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head"); %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <div class="category-cards">
+        <% if (category_list.length > 0) { %>
+        <% for (let i = 0; i<category_list.length; i++) { %>
+            <div class="category-card">
+                <div class="category-card-group">
+                    <h2 class="category-card-name"><%=category_list[i].name %></h2>
+                    <p><%=category_list[i].description %></p>
+                </div>
+                <button class="view-category-button" onclick="location.href = '<%= category_list[i].url %>'">View</button>
+            </div>
+        <% } } %>
+        </div>
+    </main>
+    </div>
+  </body>
+</html>

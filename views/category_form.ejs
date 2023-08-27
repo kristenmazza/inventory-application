@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head"); %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <form method="post" action="">
+          <div class="form-group">
+            <% const c_name = typeof category_name === 'undefined' ? '' :
+            category.name %>
+            <label for="category_name">Category: </label>
+            <input
+              id="category_name"
+              class="form-control"
+              type="text"
+              placeholder="Name of category"
+              name="category_name"
+              required="true"
+              value="<%= c_name %>"
+            />
+          </div>
+          <div class="form-group">
+            <% const c_desc = typeof category_description === 'undefined' ? '' :
+            category.description %>
+            <label for="category_description">Description: </label>
+            <input
+              id="category_description"
+              class="form-control"
+              type="text"
+              placeholder="Category description"
+              name="category_description"
+              required="true"
+              value="<% c_desc %>"
+            />
+          </div>
+          <button class="submit-button" type="submit">Submit</button>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

@@ -5,18 +5,18 @@
   </head>
   <body>
     <div class="container">
-        <div class="sidebar"><%- include("partials/sidebar"); %></div>
-        <main>
-          <p>
-            Effortlessly manage your inventory by adding, updating, and deleting
-            items and categories.
-          </p>
-          <h1>Current Inventory</h1>
-          <ul>
-            <li><strong>Items: </strong><%- item_count %></li>
-            <li><strong>Categories: </strong><%- category_count %></li>
-          </ul>
-        </main>
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <ul>
+          <li><strong>Items: </strong><%- item_count %></li>
+          <li><strong>Categories: </strong><%- category_count %></li>
+        </ul>
+        <p>
+          Effortlessly manage your inventory by adding, updating, and deleting
+          items and categories.
+        </p>
+      </main>
     </div>
   </body>
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head"); %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <form method="post" action="">
+          <div class="form-group">
+            <% const i_name = typeof item === 'undefined' ? '' : item.name %>
+            <label for="name">Item: </label>
+            <input
+              id="name"
+              class="form-control"
+              type="text"
+              placeholder="Name of item"
+              name="name"
+              required="true"
+              value="<%= i_name %>"
+            />
+          </div>
+          <div class="form-group">
+            <% const i_desc = typeof description === 'undefined' ? '' :
+            item.description %>
+            <label for="description">Description: </label>
+            <input
+              id="description"
+              class="form-control"
+              type="text"
+              placeholder="Item description"
+              name="description"
+              required="true"
+              value="<% i_desc %>"
+            />
+          </div>
+          <div class="form-group">
+            <label for="category">Category: </label>
+            <select
+              id="category"
+              class="form-control"
+              type="select"
+              placeholder="Select category"
+              name="category"
+              required="true"
+            >
+              <% for (let i = 0; i < categories.length; i++) { %> <% const
+              category = categories[i] %> <% if (typeof item !== 'undefined') {
+              %> <% const sel = (category._id.toString() ===
+              item.category._id.toString() || category._id.toString() ===
+              item.category) ? 'selected' : false %>
+              <option value="<%= category._id %>" selected="<%= sel %>">
+                <%- category.name %>
+              </option>
+              <% } else { %>
+              <option value="<%= category._id %>"><%- category.name %></option>
+              <% } %> <% } %>
+            </select>
+          </div>
+          <div class="form-group">
+            <% const i_price = typeof price === 'undefined' ? '' : item.price %>
+            <label for="price">Price: </label>
+            <input
+              id="price"
+              class="form-control"
+              type="text"
+              placeholder="Price"
+              name="price"
+              required="true"
+              value="<% i_price %>"
+            />
+          </div>
+          <div class="form-group">
+            <% const i_number_in_stock = typeof number_in_stock === 'undefined'
+            ? '' : item.number_in_stock %>
+            <label for="number_in_stock">Quantity: </label>
+            <input
+              id="number_in_stock"
+              class="form-control"
+              type="number"
+              min="0"
+              name="number_in_stock"
+              required="true"
+              placeholder="Number in stock"
+              value="<% i_number_in_stock %>"
+            />
+          </div>
+          <button class="submit-button" type="submit">Submit</button>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>
