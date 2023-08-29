@@ -89,8 +89,18 @@ hr {
 }
 
 .item-image {
+  max-height: 150px;
+  max-width: 150px;
+}
+
+.image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
   width: 150px;
-  align-self: center;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
 }
 
 .item-group-main {

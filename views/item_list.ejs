@@ -13,7 +13,9 @@
         <% for (let i = 0; i<item_list.length; i++) { %>
             <div class="item-card">
                 <div class="item-group-main">
-                    <img class="item-image" src="/images/square.png" />
+                    <div class="image-wrapper">
+                        <img class="item-image" src="<%= item_list[i].uploaded_file %>" />
+                    </div>
                     <div class="item-group">
                     <h2 class="item-card-name"><%= item_list[i].name %></h2>
                     <p class="item-description"><%= item_list[i].description %></p>

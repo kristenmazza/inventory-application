@@ -1,8 +1,50 @@
 const express = require('express');
 const router = express.Router();
-
+const path = require('path');
 const category_controller = require('../controllers/categoryController');
 const item_controller = require('../controllers/itemController');
+const multer = require('multer');
+
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/images/uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+// Initialize upload
+upload = multer({
+  storage: storage,
+  limits: 1000000,
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+});
+
+// Check file type
+function checkFileType(file, cb) {
+  // Allowed extensions
+  const filetypes = /jpeg|jpg|png|gif/;
+
+  // Check extension
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    return cb('Error: Image only');
+  }
+}
 
 // GET inventory home page
 router.get('/', item_controller.index);
@@ -11,7 +53,11 @@ router.get('/', item_controller.index);
 router.get('/item/create', item_controller.item_create_get);
 
 // POST request for creating Item
-router.post('/item/create', item_controller.item_create_post);
+router.post(
+  '/item/create',
+  upload.single('uploaded_file'),
+  item_controller.item_create_post
+);
 
 // GET request to delete Item
 router.get('/item/:id/delete', item_controller.item_delete_get);

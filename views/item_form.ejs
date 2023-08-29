@@ -8,7 +8,11 @@
       <div class="sidebar"><%- include("partials/sidebar"); %></div>
       <main>
         <h1><%= title %></h1>
-        <form method="post" action="">
+        <form
+          method="post"
+          action="/inventory/item/create"
+          enctype="multipart/form-data"
+        >
           <div class="form-group">
             <% const i_name = typeof item === 'undefined' ? '' : item.name %>
             <label for="name">Item: </label>
@@ -86,6 +90,16 @@
               placeholder="Number in stock"
               value="<% i_number_in_stock %>"
             />
+          </div>
+          <div class="form-group">
+            <label for="uploaded_file">Upload Image: </label>
+            <input
+              type="file"
+              class="form-control-file"
+              name="uploaded_file"
+              id="uploaded_file"
+            />
+            <%= typeof msg !== 'undefined' ? msg : '' %>
           </div>
           <button class="submit-button" type="submit">Submit</button>
         </form>

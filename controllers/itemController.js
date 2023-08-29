@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Category = require('../models/category');
 const Item = require('../models/item');
 const { body, validationResult } = require('express-validator');
+const inventory = require('../routes/inventory');
 
 // Display home page
 exports.index = asyncHandler(async (req, res, next) => {
@@ -85,6 +86,7 @@ exports.item_create_post = [
       price: req.body.price,
       quantity: req.body.quantity,
       number_in_stock: req.body.number_in_stock,
+      uploaded_file: '/images/uploads/' + req.file.filename,
     });
 
     if (!errors.isEmpty()) {
