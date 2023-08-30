@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head"); %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar"><%- include("partials/sidebar"); %></div>
+      <main>
+        <h1><%= title %></h1>
+        <p>
+          <strong
+            >Are you sure you want to delete the item: <%= item.name %>?</strong
+          >
+        </p>
+        <form method="post" action="">
+          <div class="form-group">
+            <input
+              id="itemid"
+              class="form-control"
+              type="hidden"
+              name="itemid"
+              required="true"
+              value="<%= item._id %>"
+            />
+          </div>
+          <button class="submit-button" type="submit">Delete</button>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>
