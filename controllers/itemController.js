@@ -3,6 +3,49 @@ const Category = require('../models/category');
 const Item = require('../models/item');
 const { body, validationResult } = require('express-validator');
 const inventory = require('../routes/inventory');
+const multer = require('multer');
+const path = require('path');
+
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/images/uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+// Initialize upload
+upload = multer({
+  storage: storage,
+  limits: 1000000,
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+});
+
+// Check file type
+function checkFileType(file, cb) {
+  // Allowed extensions
+  const filetypes = /jpeg|jpg|png|gif/;
+
+  // Check extension
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    return cb('Error: Image only');
+  }
+}
 
 // Display home page
 exports.index = asyncHandler(async (req, res, next) => {
@@ -54,6 +97,8 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
 
 // Display item create form on POST
 exports.item_create_post = [
+  upload.single('uploaded_file'),
+
   // Validate and sanitize fields.
   body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
   body('description', 'Description must not be empty.')
