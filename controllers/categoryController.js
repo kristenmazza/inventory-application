@@ -69,6 +69,7 @@ exports.category_create_post = [
 
       res.render('category_form', {
         title: 'Create Category',
+        errors: errors.array(),
       });
     } else {
       // Data from form is valid. Save category.
@@ -77,6 +78,7 @@ exports.category_create_post = [
     }
   }),
 ];
+
 // Display category delete form on GET
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
   const [category, categoryItems] = await Promise.all([
@@ -117,10 +119,59 @@ exports.category_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display category update form on GET
 exports.category_update_get = asyncHandler(async (req, res, next) => {
-  res.send('NOT IMPLEMENTED: category update GET');
+  const category = await Category.findById(req.params.id).exec();
+
+  if (category === null) {
+    const err = new Error('Category not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('category_form', {
+    title: 'Update Category',
+    category: category,
+  });
 });
 
 // Display category update form on POST
-exports.category_update_post = asyncHandler(async (req, res, next) => {
-  res.send('NOT IMPLEMENTED: category update POST');
-});
+exports.category_update_post = [
+  // Validate and sanitize fields.
+  body('category_name', 'Name must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('category_description', 'Description must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Category object with escaped and trimmed data.
+    const category = new Category({
+      name: req.body.category_name,
+      description: req.body.category_description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      res.render('category_form', {
+        title: 'Create Category',
+        errors: errors.array(),
+      });
+    } else {
+      // Data from form is valid. Save category.
+      const updatedCategory = await Category.findByIdAndUpdate(
+        req.params.id,
+        category,
+        {}
+      );
+      res.redirect(updatedCategory.url);
+    }
+  }),
+];

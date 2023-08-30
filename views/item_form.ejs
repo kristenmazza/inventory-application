@@ -27,7 +27,7 @@
             />
           </div>
           <div class="form-group">
-            <% const i_desc = typeof description === 'undefined' ? '' :
+            <% const i_desc = typeof item === 'undefined' ? '' :
             item.description %>
             <label for="description">Description: </label>
             <input
@@ -37,7 +37,7 @@
               placeholder="Item description"
               name="description"
               required="true"
-              value="<% i_desc %>"
+              value="<%= i_desc %>"
             />
           </div>
           <div class="form-group">
@@ -64,7 +64,7 @@
             </select>
           </div>
           <div class="form-group">
-            <% const i_price = typeof price === 'undefined' ? '' : item.price %>
+            <% const i_price = typeof item === 'undefined' ? '' : item.price %>
             <label for="price">Price: </label>
             <input
               id="price"
@@ -73,12 +73,12 @@
               placeholder="Price"
               name="price"
               required="true"
-              value="<% i_price %>"
+              value="<%= i_price %>"
             />
           </div>
           <div class="form-group">
-            <% const i_number_in_stock = typeof number_in_stock === 'undefined'
-            ? '' : item.number_in_stock %>
+            <% const i_number_in_stock = typeof item === 'undefined' ? '' :
+            item.number_in_stock %>
             <label for="number_in_stock">Quantity: </label>
             <input
               id="number_in_stock"
@@ -88,7 +88,7 @@
               name="number_in_stock"
               required="true"
               placeholder="Number in stock"
-              value="<% i_number_in_stock %>"
+              value="<%= i_number_in_stock %>"
             />
           </div>
           <div class="form-group">

@@ -143,6 +143,7 @@ exports.item_create_post = [
       res.render('item_form', {
         title: 'Create Item',
         categories: allCategories,
+        errors: errors.array(),
       });
     } else {
       // Data from form is valid. Save item.
@@ -174,10 +175,77 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display item update form on GET
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  res.send('NOT IMPLEMENTED: Item update GET');
+  const [item, allCategories] = await Promise.all([
+    Item.findById(req.params.id).populate('category').exec(),
+    Category.find().exec(),
+  ]);
+
+  if (item === null) {
+    const err = new Error('Item not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('item_form', {
+    title: 'Update Item',
+    item: item,
+    categories: allCategories,
+  });
 });
 
 // Display item update form on POST
-exports.item_update_post = asyncHandler(async (req, res, next) => {
-  res.send('NOT IMPLEMENTED: Item update POST');
-});
+exports.item_update_post = [
+  // Validate and sanitize fields.
+  body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Description must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('category', 'Category must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('price', 'Price must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('number_in_stock', 'Quantity must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Item object with escaped and trimmed data.
+    const item = new Item({
+      _id: req.params.id,
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      number_in_stock: req.body.number_in_stock,
+      uploaded_file: '/images/uploads/' + req.file.filename,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      // Get all categories for form.
+      const allCategories = await Category.find().exec();
+
+      res.render('item_form', {
+        title: 'Create Item',
+        categories: allCategories,
+        errors: errors.array(),
+      });
+    } else {
+      // Data from form is valid. Save item.
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
+      res.redirect(updatedItem.url);
+    }
+  }),
+];
