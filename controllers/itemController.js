@@ -195,6 +195,8 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
 
 // Display item update form on POST
 exports.item_update_post = [
+  upload.single('uploaded_file'),
+
   // Validate and sanitize fields.
   body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
   body('description', 'Description must not be empty.')

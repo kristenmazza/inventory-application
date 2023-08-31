@@ -8,11 +8,7 @@
       <div class="sidebar"><%- include("partials/sidebar"); %></div>
       <main>
         <h1><%= title %></h1>
-        <form
-          method="post"
-          action="/inventory/item/create"
-          enctype="multipart/form-data"
-        >
+        <form method="post" action="" enctype="multipart/form-data">
           <div class="form-group">
             <% const i_name = typeof item === 'undefined' ? '' : item.name %>
             <label for="name">Item: </label>
