@@ -4,5 +4,3 @@
 .flaskenv*
 !.env.project
 !.env.vault
-.env.vault
-/public/images/uploads
