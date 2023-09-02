@@ -1,8 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Category = require('../models/category');
 const Item = require('../models/item');
-const { body, validationResult } = require('express-validator');
-const inventory = require('../routes/inventory');
+const { body, validationResult, checkSchema } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 
@@ -25,27 +24,15 @@ upload = multer({
   storage: storage,
   limits: 1000000,
   fileFilter: function (req, file, cb) {
-    checkFileType(file, cb);
+    let ext = path.extname(file.originalname);
+
+    if (!['.png', '.jpg', '.gif', '.jpeg'].includes(ext)) {
+      req.fileValidationError = 'Forbidden extension';
+      return cb(null, false, req.fileValidationError);
+    }
+    cb(null, true);
   },
 });
-
-// Check file type
-function checkFileType(file, cb) {
-  // Allowed extensions
-  const filetypes = /jpeg|jpg|png|gif/;
-
-  // Check extension
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-  // Check mime
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    return cb('Error: Image only');
-  }
-}
 
 // Display home page
 exports.index = asyncHandler(async (req, res, next) => {
@@ -118,23 +105,42 @@ exports.item_create_post = [
     .isLength({ min: 1 })
     .escape(),
 
+  checkSchema({
+    uploaded_file: {
+      custom: {
+        options: (value, { req }) => {
+          return !!req.file;
+        },
+        errorMessage: 'Image must be uploaded',
+      },
+    },
+  }),
+
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
-    // Create a Item object with escaped and trimmed data.
-    const item = new Item({
+    const formData ={
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       price: req.body.price,
       quantity: req.body.quantity,
       number_in_stock: req.body.number_in_stock,
-      uploaded_file: '/images/uploads/' + req.file.filename,
-    });
+    };
 
-    if (!errors.isEmpty()) {
+    if (req.fileValidationError) {
+      // Get all categories for form.
+      const allCategories = await Category.find().exec();
+
+      res.render('item_form', {
+        title: 'Create Item',
+        item: formData,
+        categories: allCategories,
+        errors: [{ msg: 'Invalid image type' }],
+      });
+    } else if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
 
       // Get all categories for form.
@@ -142,10 +148,22 @@ exports.item_create_post = [
 
       res.render('item_form', {
         title: 'Create Item',
+        item: formData,
         categories: allCategories,
         errors: errors.array(),
       });
     } else {
+      // Create a Item object with escaped and trimmed data.
+      const item = new Item({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        number_in_stock: req.body.number_in_stock,
+        uploaded_file: '/images/uploads/' + req.file.filename,
+      });
+
       // Data from form is valid. Save item.
       await item.save();
       res.redirect(item.url);
@@ -216,35 +234,66 @@ exports.item_update_post = [
     .isLength({ min: 1 })
     .escape(),
 
+    checkSchema({
+    uploaded_file: {
+      custom: {
+        options: (value, { req }) => {
+          return !!req.file;
+        },
+        errorMessage: 'Image must be uploaded',
+      },
+    },
+    }),
+
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
-    // Create a Item object with escaped and trimmed data.
-    const item = new Item({
-      _id: req.params.id,
+    const formData ={
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       price: req.body.price,
       quantity: req.body.quantity,
       number_in_stock: req.body.number_in_stock,
-      uploaded_file: '/images/uploads/' + req.file.filename,
-    });
+    };
 
-    if (!errors.isEmpty()) {
+    if (req.fileValidationError) {
+      // Get all categories for form.
+      const allCategories = await Category.find().exec();
+
+      res.render('item_form', {
+        title: 'Create Item',
+        item: formData,
+        categories: allCategories,
+        errors: [{ msg: 'Invalid image type' }],
+      });
+    } else if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
 
       // Get all categories for form.
       const allCategories = await Category.find().exec();
 
       res.render('item_form', {
-        title: 'Create Item',
+        title: 'Update Item',
+        item: item,
         categories: allCategories,
         errors: errors.array(),
       });
     } else {
+      // Create a Item object with escaped and trimmed data.
+      const item = new Item({
+        _id: req.params.id,
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        number_in_stock: req.body.number_in_stock,
+        uploaded_file: '/images/uploads/' + req.file.filename,
+      });
+
       // Data from form is valid. Save item.
       const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
       res.redirect(updatedItem.url);
